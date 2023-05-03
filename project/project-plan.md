@@ -26,9 +26,6 @@ The data source shows new passenger vehicle registrations by segment and model s
 [See the full list here](https://mobilithek.info/offers?searchString=%22Neuzulassungen%20von%20Personenkraftwagen%22&page=2)
 
 
-https://www.kba.de/SharedDocs/Downloads/DE/Statistik/Fahrzeuge/FZ11/fz11_2023_01.xlsx?__blob=publicationFile&v=5
-
-
 ## Work Packages
 1. Analyze the Data of the different Datasources and their uses in this Project.
 2. Analyze the Structure of second Datasource and build a Script to download and store the different statistics into a Database 
