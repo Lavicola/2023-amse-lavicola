@@ -1,6 +1,6 @@
 import json
 import re
-
+import logging
 ILLEGAL_CHARACTERS_TABLE_NAME = ["/", "#", " ", "[", "]", "-", "(", ")", "\n", ":"]
 
 
@@ -78,12 +78,12 @@ def main(json_list: list[json]):
     """
 
     """
-    print("Remove Illegal Characters in Keys")
+    logging.info("Remove Illegal Characters in Keys")
     json_list = remove_illegal_characters_tablename(json_list)
 
     return json_list
 
 
 if __name__ == "__main__":
-    print("nothing happens here")
+    logging.info("nothing happens here")
     main()

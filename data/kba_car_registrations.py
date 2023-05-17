@@ -13,6 +13,7 @@ import pandas as pd
 import json
 import datetime
 import shutil
+import logging
 
 TABLE_NAME = "car_registration"
 
@@ -75,7 +76,6 @@ def get_rows(bs_rows: "bs4.element.ResultSet", column_dict: dict[str]):
     return results
 
 
-
 # ### kba download strategy, depending if table exists or not
 
 
@@ -94,11 +94,11 @@ def download_list_of_files_strategy(url: str, fileending: str, keywords: list[st
             if not os.path.isdir(folder_path):
                 os.mkdir(folder_path)
         for link in links:
-            print(f"trying to download {link}")
+            logging.info(f"trying to download {link}")
             download_file(folder_path, link, fileending)
             time.sleep(1)
     else:
-        print(f"request for {url} was not successful, error code {response.status_code}")
+        logging.info(f"request for {url} was not successful, error code {response.status_code}")
 
 
 def download_table_strategy(response: "requests.models.Response"):
@@ -112,30 +112,30 @@ def download_table_strategy(response: "requests.models.Response"):
     # check if a table exists, if yes we can extract via table stratehy
     tables = soup.find_all('table')
     if not tables:
-        print(f"Table site did exist, but could not found table for {response.url}")
+        logging.info(f"Table site did exist, but could not found table for {response.url}")
         # the table contains always "absolut"
     table = get_table(tables, "absolut")
     # get the header
     thead = table.find('thead')
     if not thead:
-        print("no thead found")
+        logging.info("no thead found")
         return
     # get the column elements
     column_names = thead.find_all("th")
     if not column_names:
-        print("no column names found (th)")
+        logging.info("no column names found (th)")
         return
     column_dict = get_column_names_column_index(column_names, ["Elektro", "Elektro (BEV)", "Land"])
     if not column_dict:
-        print("columns not found")
+        logging.info("columns not found")
     # get rows of the table
     rows = table.find_all("tr")
     if not rows:
-        print("rows not found")
+        logging.info("rows not found")
         return
     elements_to_be_stored = get_rows(rows, column_dict)
     if not elements_to_be_stored:
-        print("No elements to be stored")
+        logging.info("No elements to be stored")
         return
     return elements_to_be_stored
 
@@ -153,7 +153,7 @@ def find_links_to_download(website: str, soup_links: "bs4.element.ResultSet", ke
     list_elements = soup_links
     for link in list_elements:
         if not link:
-            print("link not found")
+            logging.info("link not found")
             continue
         for keyword in keywords:
             if keyword.encode("unicode_escape") in link.encode("unicode_escape"):
@@ -184,7 +184,7 @@ def download_file(folder_path: str, link: str, fileending: str, file_name=""):
             file_name = match.group(1)
         else:
             # notice user and generate a filename which is not already taken
-            print(f"file name could be not extracted for {link}")
+            logging.info(f"file name could be not extracted for {link}")
             while True:
                 file_name = f"file_{random.randint(1, 99999)}.xlsx"
                 if not os.path.exists(os.path.join(folder_path, file_name)):
@@ -196,7 +196,7 @@ def download_file(folder_path: str, link: str, fileending: str, file_name=""):
         with open(file_path, 'wb') as file:
             file.write(response.content)
     else:
-        print("Failed to download the file.")
+        logging.info("Failed to download the file.")
 
 
 # ### kba extract table and table data
@@ -243,7 +243,6 @@ def get_rows(bs_rows: "bs4.element.ResultSet", column_dict: dict[str]):
     return results
 
 
-
 # ### Read certain Excel File and store rows into variables
 
 
@@ -268,7 +267,7 @@ def extract_excel_data(file_path: str, sheet_name: str, header_start: int, row_s
     if match:
         date = match.group(0)
     else:
-        print(f"No Date found for {file_path}")
+        logging.info(f"No Date found for {file_path}")
     # create the JSON object for every row
     json_list = []
     for i in range(row_start, row_start + 6):
@@ -301,12 +300,12 @@ def main():
     excel_file_folder_path = os.path.join(os.getcwd(), excel_file_folder_name)
     for year in range(2015, datetime.datetime.now().year):
         kba_url = kba_generic_url_table.format(year)
-        print(f"New year: {year}" + "\n" + kba_url)
+        logging.info(f"New year: {year}" + "\n" + kba_url)
         # get content of website
         response = requests.get(kba_url)
         if response.status_code == 200:
             # if status code is 200 the site has a table and we can try to extract the data
-            print(f"Table found for {kba_url}, using table strategy")
+            logging.info(f"Table found for {kba_url}, using table strategy")
             json_elements = download_table_strategy(response)
             if json_elements:
                 # add date to the element
@@ -316,13 +315,14 @@ def main():
 
         else:
             # if status code differs it will be most likely a list of files --> change url and try again
-            print(f"Generic Table Url not found for {kba_url}\n trying the generic download link url")
+            logging.info(f"Generic Table Url not found for {kba_url}\n trying the generic download link url")
             kba_url = kba_generic_download_links.format(year)
             response = requests.get(kba_url)
             if response.status_code != 200:
-                print(f"kba_generic_download_links failed for {kba_url} ")
+                logging.info(f"kba_generic_download_links failed for {kba_url} ")
                 continue
-            print(f"Generic Download link URL {response.url} worked, going with download_list_of_files_strategy ")
+            logging.info(
+                f"Generic Download link URL {response.url} worked, going with download_list_of_files_strategy ")
             # the files contains always the month in their names, therefore the months are the keywords
             months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
                       'November', 'Dezember']
@@ -334,9 +334,10 @@ def main():
         json_elements = extract_excel_data(os.path.join(excel_file_folder_path, excel_file), "FZ 28.1", 10, 13)
         if json_elements:
             json_list += json_elements
-    # remove the folder
-    #    shutil.rmtree(excel_file_folder_path)
-
+    try:
+        shutil.rmtree(excel_file_folder_path)
+    except OSError as e:
+        logging.critical(f"Could not remove Folder {excel_file_folder_path}\n({e}")
     return json_list
 
 

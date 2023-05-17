@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
+import shutil
 
 import requests
 import re
@@ -8,7 +9,7 @@ import pandas as pd
 import re
 import json
 import random
-
+import logging
 TABLE_NAME = "Ladesaulen"
 
 url = "https://bundesnetzagentur.de/SharedDocs/Downloads/DE/Sachgebiete/Energie/Unternehmen_Institutionen/E_Mobilitaet/Ladesaeulenregister_CSV.csv?__blob=publicationFile&v=46"
@@ -30,7 +31,7 @@ def download_file(link: str, fileending: str, file_name="", params=""):
             file_name = match.group(1)
         else:
             # notice user and generate a filename which is not already taken
-            print(f"file name could be not extracted for {link}")
+            logging.info(f"file name could be not extracted for {link}")
             while True:
                 file_name = f"file_{random.randint(1, 99999)}.xlsx"
                 if not os.path.exists(file_name):
@@ -43,9 +44,9 @@ def download_file(link: str, fileending: str, file_name="", params=""):
         new_content = clean_file(response.content)
         with open(file_name, 'wb') as file:
             file.write(new_content)
-            print("file sucessfully written!")
+            logging.info("file sucessfully written!")
     else:
-        print("Failed to download the file.")
+        logging.info("Failed to download the file.")
     return os.path.join(os.getcwd(), file_name)
 
 
@@ -95,6 +96,12 @@ def main():
     """
     file_path = download_file(url, "csv", "", {"__blob": "publicationFile", "v": "46"})
     json_data = extract_csv_data(file_path)
+    try:
+        os.remove(file_path)
+    except OSError:
+        logging.critical(f"Could not remove File: {file_path}")
+
+
     return json_data
 
 
