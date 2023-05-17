@@ -39,3 +39,7 @@ Furthermore sqlite will be used to store the extracted Information in a database
 Jupyter Notebook in combination with DB Browser
 ### Data analysis
 Jupyter Notebook
+### Data Pipeline
+![Dataflow in the Pipeline](data_pipeline.drawio.svg)
+
+
