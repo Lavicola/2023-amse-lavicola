@@ -86,7 +86,7 @@ def main():
     with engine.connect() as connection:
         connection.execute(text(create_table_query))
     # now insert df
-    df.to_sql(TABLE_NAME, con=engine, if_exists="replace", index=True)
+    df.to_sql(TABLE_NAME, con=engine, if_exists="replace", index=False)
     return 0
 
 
