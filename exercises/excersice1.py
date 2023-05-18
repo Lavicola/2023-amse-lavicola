@@ -50,7 +50,7 @@ def python_type_to_sqlalchemy_type(python_type, value):
 def main():
     path = os.path.join(os.getcwd(), "rhein-kreis-neuss-flughafen-weltweit.csv")
     df = pd.read_csv(path, delimiter=';')
-    TABLE_NAME = "airport"
+    TABLE_NAME = "airports"
 
     results = []
     # Iterate over the DataFrame columns
