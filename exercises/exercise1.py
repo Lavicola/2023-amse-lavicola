@@ -2,7 +2,6 @@ import decimal
 import datetime
 from sqlalchemy import create_engine, text
 import sqlalchemy.types as types
-import os
 import pandas as pd
 
 BIGINT = "BIGINT"
@@ -48,8 +47,9 @@ def python_type_to_sqlalchemy_type(python_type, value):
 
 
 def main():
-    path = os.path.join(os.getcwd(), "rhein-kreis-neuss-flughafen-weltweit.csv")
-    df = pd.read_csv(path, delimiter=';')
+    df = pd.read_csv(
+        r"https://opendata.rhein-kreis-neuss.de/api/v2/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv",
+        delimiter=';')
     TABLE_NAME = "airports"
 
     results = []
