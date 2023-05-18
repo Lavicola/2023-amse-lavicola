@@ -50,6 +50,7 @@ def main():
     df = pd.read_csv(
         r"https://opendata.rhein-kreis-neuss.de/api/v2/catalog/datasets/rhein-kreis-neuss-flughafen-weltweit/exports/csv",
         delimiter=';')
+
     TABLE_NAME = "airports"
 
     results = []
@@ -74,7 +75,7 @@ def main():
                 else:
                     raise Exception("whyyyyyyyyyyyy")
         results.append((current_column_name, current_value_type))
-    create_table_query = "CREATE TABLE IF NOT EXISTS my_table (\n"
+    create_table_query = f"CREATE TABLE IF NOT EXISTS {TABLE_NAME} (\n"
     for column in results:
         new_line = f"{column[0]} {column[1]},\n"
         create_table_query += new_line
