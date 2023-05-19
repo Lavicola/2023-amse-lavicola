@@ -1,6 +1,8 @@
 import json
 import re
 import logging
+import pandas as pd
+
 ILLEGAL_CHARACTERS_TABLE_NAME = ["/", "#", " ", "[", "]", "-", "(", ")", "\n", ":"]
 
 
@@ -51,6 +53,24 @@ def transform_table_name(json_list: list[json]):
                     del json_element[key]
     json_list = remove_keys(json_list)
 
+    return json_list
+
+
+def convert_to_float(json_list: list[json], keys: list[str]):
+    """
+    :param json_list:
+    :param columns:
+    :return:
+    """
+    logging.info(f"Replacing comma with dot for the following keys: {keys}")
+    for element in json_list:
+        for key in keys:
+            if key in element:
+                try:
+                    element[key] = float(element[key].replace(",", "."))
+                except ValueError:
+                    # some don´t have both coordinates, use invalid value
+                    element[key] = 0.0
     return json_list
 
 

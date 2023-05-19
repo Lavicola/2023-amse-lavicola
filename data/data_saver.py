@@ -4,6 +4,7 @@ import pandas as pd
 import json
 import logging
 
+
 def main(json_list: list[json], database_path: str):
     """
 
@@ -22,6 +23,7 @@ def main(json_list: list[json], database_path: str):
         if json_element["tablename"] not in json_dict.keys():
             json_dict[json_element["tablename"]] = []
         tablename = json_element["tablename"]
+        json_element["visited"] = True
         del json_element["tablename"]
         json_dict[tablename].append(json_element)
     # once done create for every key the table,
@@ -34,7 +36,7 @@ def main(json_list: list[json], database_path: str):
     connection.commit()
 
     # and now insert the data
-    chunksize = 5000
+    chunksize = 10000
     for tablename in json_dict.keys():
         for json_element in json_dict[tablename]:
             df = pd.json_normalize(json_element, errors='ignore')

@@ -291,7 +291,7 @@ def extract_excel_data(file_path: str, sheet_name: str, header_start: int, row_s
     return json_list
 
 
-def main():
+def get_json_data():
     # there exists two different url which holds the data we need.
     kba_generic_url_table = "https://www.kba.de/DE/Statistik/Fahrzeuge/Neuzulassungen/Umwelt/{0}/{0}_n_umwelt_tabellen.html?nn=3525054&fromStatistic=3525054&yearFilter={0}"
     kba_generic_download_links = "https://www.kba.de/DE/Statistik/Fahrzeuge/Neuzulassungen/Umwelt/n_umwelt_node.html;?yearFilter={0}"
@@ -342,4 +342,4 @@ def main():
 
 
 if __name__ == "__main__":
-    json_list = main()
+    json_list = get_json_data()

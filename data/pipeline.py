@@ -39,7 +39,11 @@ def main():
 
     initialize_logging(args.log)
     json_list = []
-    json_elements = None
+    json_car = []
+    json_charger = []
+
+    # Extracting and Converting to json format #
+
     # depending if intermediate file shall be used or not
     if args.pipeline_intermediate:
         # read intermediate data
@@ -48,28 +52,53 @@ def main():
             logging.info(f"Intermediate file in place {INTERMEDIATE_PATH} not found, abort!")
             return
         logging.info("trying to load intermediate data")
-        json_list = data_saver.load_intermediate_data(INTERMEDIATE_PATH)
+        # split them before transformation
+        json_charger = []
+        # TODO create a dict with json[tablename] for easier extension
+        for element in data_saver.load_intermediate_data(INTERMEDIATE_PATH):
+            if "Hausnummer" in element:
+                json_charger.append(element)
+            else:
+                json_car.append(element)
     else:
         logging.info("Starting with downloading the kba car registration Data ")
-        json_elements = kba_car_registrations.main()
-        if json_elements:
-            logging.info("Success, Data found and stored")
-            json_list += json_elements
-        json_list = data_transformer.transform_table_name(json_list)
+        json_car = kba_car_registrations.get_json_data()
+        if json_car:
+            logging.info("Success, Car Registration Data found and stored")
         logging.info("Downloading the Ladesauelen Data ")
-        json_elements = ladesauele.main()
-        if json_elements:
-            logging.info("Success, Data found and stored")
-            json_list += json_elements
+        json_charger = ladesauele.get_json_data()
+        if json_charger:
+            logging.info("Success, Charger Data found and stored")
         logging.info("Starting to Transform the data")
 
     if args.store_intermediate:
-        data_saver.save_intermediate(json_list, INTERMEDIATE_PATH)
+        data_saver.save_intermediate(json_charger + json_car, INTERMEDIATE_PATH)
 
+    # Transformation #
+    logging.info("Starting Transformation of Data")
     # transform and store into database
+    # specific transformation for car_json
+    json_car = data_transformer.transform_table_name(json_car)
+
+    json_list += json_car
+
+    # specific transformation for car_json
+    # breitengrad and längengrad have comma instead of a dot
+    json_charger = data_transformer.convert_to_float(json_charger, ["Breitengrad", "Längengrad"])
+    json_list += json_charger
+
+    # general transformation
     json_list = data_transformer.main(json_list)
+
+    # Storing #
+
+
+
     logging.info("Storing the Data into a SQLite Database")
     data_saver.main(json_list, args.db)
+    logging.info("Done")
+
+
 
 
 def initialize_logging(enable_logging):

@@ -58,13 +58,11 @@ def clean_file(content: bytes):
 
     # first convert to a string with the right encoding
     content = content.decode("Windows-1252")
-    # second remove the redundant ";"
-    new_content = str(re.sub(";;+", ";", content))
-    # even now the file is still not clean, we need to remove the content until we reach the first column
-    match = re.search(r'Betreiber;', new_content)
+    # remove content until we reach the first column
+    match = re.search(r'Betreiber;', content)
     if match:
         start_index = match.start()
-        new_content = new_content[start_index:]
+        new_content = content[start_index:]
     else:
         raise Exception("Error, could not clean the file")
     return new_content.encode("Windows-1252")
@@ -88,7 +86,7 @@ def extract_csv_data(file_path: str):
     return json_data
 
 
-def main():
+def get_json_data():
     """
     Download and Clean the ladesaulenfile
     Convert the data to a list of json objects with an additional key called tablename
@@ -106,4 +104,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    get_json_data()
