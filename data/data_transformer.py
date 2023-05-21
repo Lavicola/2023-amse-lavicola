@@ -1,28 +1,23 @@
 import json
 import re
 import logging
-import pandas as pd
 
 ILLEGAL_CHARACTERS_TABLE_NAME = ["/", "#", " ", "[", "]", "-", "(", ")", "\n", ":"]
+ILLEGAL_CHARACTERS_DICT = {char: True for char in ILLEGAL_CHARACTERS_TABLE_NAME}
+TRANSLATION_TABLE = str.maketrans("".join(ILLEGAL_CHARACTERS_DICT), "_" * len(ILLEGAL_CHARACTERS_DICT))
 
 
 def remove_illegal_characters_tablename(json_list: list[json]):
     """"
-    very poor solution
+
     """
 
     for json_element in json_list:
-        keys_to_modify = []
-        for key, value in json_element.items():
-            # TODO very slow solution
-            if any(illegal_char in key for illegal_char in ILLEGAL_CHARACTERS_TABLE_NAME):
-                keys_to_modify.append(key)
+        keys_to_modify = [key for key in json_element if any(char in key for char in ILLEGAL_CHARACTERS_DICT)]
         for key in keys_to_modify:
             value = json_element[key]
             del json_element[key]
-            modified_key = key
-            for illegal_char in ILLEGAL_CHARACTERS_TABLE_NAME:
-                modified_key = modified_key.replace(illegal_char, "_")
+            modified_key = key.translate(TRANSLATION_TABLE)
             json_element[modified_key] = value
 
     return json_list
@@ -41,6 +36,7 @@ def transform_table_name(json_list: list[json]):
     """
     SAME_WORDS = ["Elektro", "Flüssiggas", "Erdgas", "Wasserstoff"]
 
+    # surely there is a better option, but not worth it for the current amount of data ~ 0,22 seconds
     for word in SAME_WORDS:
         for json_element in json_list:
             keys_to_modify = []

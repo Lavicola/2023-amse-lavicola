@@ -3,9 +3,10 @@ import sqlite3
 import pandas as pd
 import json
 import logging
+import time
 
 
-def main(json_list: list[json], database_path: str):
+def store_in_database(json_list: list[json], database_path: str):
     """
 
     :param json_list:
@@ -15,34 +16,39 @@ def main(json_list: list[json], database_path: str):
     json_dict = {}
 
     # Establish a connection to the database
-    connection = sqlite3.connect(f"{database_path}")
+    connection = sqlite3.connect(database_path)
     cursor = connection.cursor()
 
-    # sort the different json elements to their entry and delete the tablename
+    # Sort the different JSON elements to their entry and delete the tablename
     for json_element in json_list:
         if json_element["tablename"] not in json_dict.keys():
             json_dict[json_element["tablename"]] = []
         tablename = json_element["tablename"]
-        json_element["visited"] = True
         del json_element["tablename"]
         json_dict[tablename].append(json_element)
-    # once done create for every key the table,
-    for tablename in json_dict.keys():
-        df = pd.json_normalize(json_dict[tablename][0])
-        a = df.columns
-        # Create the table if it doesn't exist
-        create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(df.columns)});"
-        cursor.execute(create_table_query)
-    connection.commit()
 
-    # and now insert the data
+    # Create tables and insert data
+    cursor.execute("BEGIN TRANSACTION;")
     chunksize = 10000
-    for tablename in json_dict.keys():
-        for json_element in json_dict[tablename]:
-            df = pd.json_normalize(json_element, errors='ignore')
-            df.to_sql(tablename, connection, if_exists="append", chunksize=chunksize, index=False, method="multi")
 
-    connection.commit()
+    for tablename, elements in json_dict.items():
+        if len(elements) <= 0:
+            logging.info(f"{tablename} has no rows")
+            break
+
+        df = pd.json_normalize(elements[0])
+        df_columns = df.columns.tolist()
+        create_table_query = f"CREATE TABLE IF NOT EXISTS {tablename} ({', '.join(df_columns)});"
+        cursor.execute(create_table_query)
+
+        for i in range(0, len(elements), chunksize):
+            chunk = elements[i:i + chunksize]
+            values = [[element.get(column, None) for column in df_columns] for element in chunk]
+            placeholders = ", ".join(["?"] * len(df_columns))
+            insert_statement = f"INSERT INTO {tablename} VALUES ({placeholders});"
+            cursor.executemany(insert_statement, values)
+
+    cursor.execute("COMMIT;")
     cursor.close()
     connection.close()
 
@@ -86,4 +92,4 @@ def load_intermediate_data(file_path: str):
 
 
 if __name__ == "__main__":
-    main(None)
+    print("dont execute me!")
