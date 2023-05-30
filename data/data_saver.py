@@ -1,9 +1,7 @@
-import json
 import sqlite3
 import pandas as pd
 import json
 import logging
-import time
 
 
 def store_in_database(json_list: list[json], database_path: str):
@@ -16,6 +14,7 @@ def store_in_database(json_list: list[json], database_path: str):
     json_dict = {}
 
     # Establish a connection to the database
+    logging.info(f"Trying to connect or create database: {database_path}")
     connection = sqlite3.connect(database_path)
     cursor = connection.cursor()
 
@@ -63,7 +62,7 @@ def save_intermediate(json_list: list[json], file_path: str):
     :return: None
     """
     json_string = json.dumps(json_list)
-    logging.info(f"Trying to open file{file_path}")
+    logging.info(f"Trying to open file{file_path} for intermediate.json")
     try:
         with open(file_path, "w") as file:
             logging.info("Writing Intermediate Data into File")

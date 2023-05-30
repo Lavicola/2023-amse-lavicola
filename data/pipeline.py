@@ -1,4 +1,5 @@
 import os
+import sys
 
 import kba_car_registrations
 import ladesauele
@@ -90,15 +91,9 @@ def main():
     # general transformation
     json_list = data_transformer.main(json_list)
 
-    # Storing #
-
-
-
     logging.info("Storing the Data into a SQLite Database")
-    data_saver.main(json_list, args.db)
+    data_saver.store_in_database(json_list, args.db)
     logging.info("Done")
-
-
 
 
 def initialize_logging(enable_logging):

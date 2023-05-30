@@ -329,15 +329,16 @@ def get_json_data():
             download_list_of_files_strategy(kba_url, "xlsx", months, excel_file_folder_path)
         time.sleep(1)
     # now convert the downloaded excel files to json objects
-    excel_files = os.listdir(excel_file_folder_path)
-    for excel_file in excel_files:
-        json_elements = extract_excel_data(os.path.join(excel_file_folder_path, excel_file), "FZ 28.1", 10, 13)
-        if json_elements:
-            json_list += json_elements
-    try:
-        shutil.rmtree(excel_file_folder_path)
-    except OSError as e:
-        logging.critical(f"Could not remove Folder {excel_file_folder_path}\n({e}")
+    if os.path.isdir(excel_file_folder_path):
+        excel_files = os.listdir(excel_file_folder_path)
+        for excel_file in excel_files:
+            json_elements = extract_excel_data(os.path.join(excel_file_folder_path, excel_file), "FZ 28.1", 10, 13)
+            if json_elements:
+                json_list += json_elements
+        try:
+            shutil.rmtree(excel_file_folder_path)
+        except OSError as e:
+            logging.critical(f"Could not remove Folder {excel_file_folder_path}\n({e}")
     return json_list
 
 
