@@ -3,7 +3,7 @@ import os
 import sqlite3
 import unittest
 import subprocess
-from data import pipeline
+import pipeline
 
 class PipelineTests(unittest.TestCase):
     CURRENT_PATH = os.getcwd()
