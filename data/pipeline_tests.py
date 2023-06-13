@@ -103,3 +103,7 @@ class PipelineTests(unittest.TestCase):
         if os.path.isfile(self.DATABASE_FILEPATH):
             logging.warning(f"Removing: {self.DATABASE_FILEPATH}")
             os.remove(self.DATABASE_FILEPATH)
+
+if __name__ == "__main__":
+    unittest.main()
+
