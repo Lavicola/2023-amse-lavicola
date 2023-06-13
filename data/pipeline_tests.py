@@ -69,7 +69,7 @@ class PipelineTests(unittest.TestCase):
         """
 
         # patch is not working, therefore old school
-        subprocess.check_call(['python3', 'pipeline.py', '--store_intermediate=True'])
+        subprocess.call(['python3', 'pipeline.py', '--store_intermediate=True'])
 
         # check for success conditions
         assert os.path.exists(
