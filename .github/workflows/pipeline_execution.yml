@@ -22,6 +22,6 @@ jobs:
       - name: Run Tests
         run: |
           cd project &&
-          ls -al &&
           chmod +x tests.sh &&
+          ls -al &&
           ./tests.sh
