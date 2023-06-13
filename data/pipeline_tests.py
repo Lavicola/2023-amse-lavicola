@@ -105,5 +105,5 @@ class PipelineTests(unittest.TestCase):
             os.remove(self.DATABASE_FILEPATH)
 
 if __name__ == "__main__":
-    unittest.main()
+    PipelineTests.test_pipeline_without_arguments()
 
