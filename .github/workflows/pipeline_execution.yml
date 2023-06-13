@@ -19,11 +19,11 @@ jobs:
 #      - name: Install dependencies
 #        run: pip install -r requierements.txt
 
-      - name: DEBUG Print folder/files
+      - name: Go into Project folder
         run: |
-          ls -al
+          cd project
 
       - name: Run tests
         run: |
-          chmod +x project/tests.sh
-          project/tests.sh
+          chmod +x tests.sh
+          tests.sh
