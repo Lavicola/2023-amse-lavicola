@@ -12,3 +12,12 @@ if command -v python3 &>/dev/null; then
 else
     python data/pipeline_tests.py
 fi
+# for action check the exit code
+exit_code=$?
+if [ $exit_code -eq 0 ]; then
+  echo "Python Tests executed successfully."
+  exit 0
+else
+  echo "Python Tests failed."
+  exit 1
+fi
