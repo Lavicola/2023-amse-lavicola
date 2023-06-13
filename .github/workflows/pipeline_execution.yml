@@ -16,8 +16,12 @@ jobs:
         with:
           python-version: 3.10.0
 
-      - name: Install dependencies
-        run: pip install -r requierements.txt
+#      - name: Install dependencies
+#        run: pip install -r requierements.txt
+
+      - name: DEBUG Print current folder
+        run: |
+          echo "Current folder: $PWD"
 
       - name: Run tests
         run: |
