@@ -19,15 +19,8 @@ jobs:
 #      - name: Install dependencies
 #        run: pip install -r requierements.txt
 
-      - name: Go into Project folder
+      - name: Run Tests
         run: |
-          cd project
-
-      - name: check if tests.sh exists
-        run: |
-          ls -al
-
-      - name: Run tests
-        run: |
-          chmod +x /tests.sh
-          /tests.sh
+          cd project &&
+          ls -al &&
+          tests.sh
