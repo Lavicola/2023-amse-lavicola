@@ -8,9 +8,9 @@ else
 fi
 
 if command -v python3 &>/dev/null; then
-    python3 data/pipeline_tests.py
+    python3 -u data/pipeline_tests.py
 else
-    python data/pipeline_tests.py
+    python -u data/pipeline_tests.py
 fi
 # for action check the exit code
 exit_code=$?
