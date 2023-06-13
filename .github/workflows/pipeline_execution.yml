@@ -23,5 +23,5 @@ jobs:
         run: |
           cd project &&
           ls -al &&
-          chmod +x ./tests.sh &&
+          chmod +x tests.sh &&
           ./tests.sh
