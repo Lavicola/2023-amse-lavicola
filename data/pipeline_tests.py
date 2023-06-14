@@ -1,6 +1,7 @@
 import logging
 import os
 import sqlite3
+import sys
 import unittest
 import subprocess
 import pipeline
@@ -30,7 +31,9 @@ class PipelineTests(unittest.TestCase):
         - no table contains less than 100 entries
         :return:
         """
-
+        print("test")
+        # remove args
+        sys.argv = sys.argv[:1]
         # start the Pipeline
         pipeline.main()
 
@@ -67,10 +70,10 @@ class PipelineTests(unittest.TestCase):
         - no table contains less than 100 entries
         :return:
         """
-
+        # remove args
+        sys.argv = sys.argv[:1]
         # patch is not working, therefore old school
         subprocess.call(['python3', 'pipeline.py', '--store_intermediate=True'])
-
         # check for success conditions
         assert os.path.exists(
             self.INTERMEDIATE_FILEPATH), "Intermediate File not found, even-though it should be here "

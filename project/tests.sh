@@ -8,9 +8,9 @@ else
 fi
 
 if command -v python3 &>/dev/null; then
-    python3 -m unittest -k test_pipeline_without_arguments data/pipeline_tests.PipelineTests
+    python3 -m unittest pipeline_tests.PipelineTests.test_pipeline_without_arguments
 else
-    python -m unittest -k test_pipeline_without_arguments data/pipeline_tests.PipelineTests
+    python -m unittest pipeline_tests.PipelineTests.test_pipeline_without_arguments
 fi
 # for action check the exit code
 exit_code=$?
