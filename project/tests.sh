@@ -8,9 +8,9 @@ else
 fi
 
 if command -v python3 &>/dev/null; then
-    (cd .. && cd data && python3 -m unittest pipeline_tests.PipelineTests.test_pipeline_without_arguments)
+    (cd data && python3 -m unittest pipeline_tests.PipelineTests.test_pipeline_without_arguments)
 else
-    (cd .. && cd data && python -m unittest pipeline_tests.PipelineTests.test_pipeline_without_arguments)
+    (cd data && python -m unittest pipeline_tests.PipelineTests.test_pipeline_without_arguments)
 fi
 # for action check the exit code
 exit_code=$?
