@@ -47,7 +47,7 @@ def sql_part(df):
     engine = create_engine(f'sqlite:///{TABLE_NAME}.sqlite')
     df.to_sql(TABLE_NAME, con=engine, if_exists="replace", index=False,
               dtype={
-                  "date": types.DATETIME,
+                  "date": types.String,
                   "CIN": types.String,
                   "name": types.String,
                   "petrol": types.Integer,
