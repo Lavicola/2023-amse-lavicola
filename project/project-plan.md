@@ -1,9 +1,9 @@
 # Project Plan
 
 ## Summary
-The project deals with the (temporal) connection between the approval of electric cars and the expansion of the charging infrastructure. The charging infrastructure is limited to those publicly reported to the Federal Network Agency. The data for the registration of electric cars takes into account the data published monthly by the Kraftfahrt-Bundesamt (Federal Motor Transport Authority)
+Germany recognized e-mobility as an important technology for itself and its economy at an early stage. Policymakers have continued to roll out several action plans to promote e-mobility, but what impact have these plans had in reality?
+this analysis shows the actual effects of the following German action plans on e-mobility:<br>
 ## Rationale
-Maps for charging stations exist in many places, but the goal of the project is to link the above data and present it in a descriptive way to give a user the relationship between electric cars and public charging stations at a given moment in Germany.
 ## Datasources
 
 ### Datasource1: Liste der Ladesäulen

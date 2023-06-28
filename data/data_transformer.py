@@ -77,7 +77,7 @@ def remove_keys(json_list: list[json]):
     :param json_list:
     :return:
     """
-    SAME_WORDS = ["Hybrid", "Wasserstoff", "Diesel", "Benzin"]
+    SAME_WORDS = ["Hybrid", "Wasserstoff"]
 
     for word in SAME_WORDS:
         for json_element in json_list:

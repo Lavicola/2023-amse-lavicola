@@ -11,11 +11,12 @@ import os
 from urllib.parse import urljoin, urlparse
 import pandas as pd
 import json
-import datetime
 import shutil
 import logging
 
 TABLE_NAME = "car_registration"
+START_YEAR = 2010
+END_YEAR = 2022
 
 
 def get_table(tables: "bs4.element.ResultSet", keyword: str):
@@ -125,7 +126,7 @@ def download_table_strategy(response: "requests.models.Response"):
     if not column_names:
         logging.info("no column names found (th)")
         return
-    column_dict = get_column_names_column_index(column_names, ["Elektro", "Elektro (BEV)", "Land"])
+    column_dict = get_column_names_column_index(column_names, ["Elektro", "Benzin", "Diesel", "Elektro (BEV)", "Land"])
     if not column_dict:
         logging.info("columns not found")
     # get rows of the table
@@ -229,15 +230,14 @@ def get_rows(bs_rows: "bs4.element.ResultSet", column_dict: dict[str]):
     for row in bs_rows:
         # the result represents a list which represents the row
         rows.append([cell for cell in row.text.split("\n") if cell.strip()])
-    # iterate torugh every row and create a json object which represent the row
+    # iterate trough every row and create a json object which represent the row
     for i in range(1, len(rows) - 1):
         # temp json variable to hold the data
         json_data = {}
         for key, value in column_dict.items():
             json_data[key] = rows[i][value]
-            # TODO make it nicer
         json_data["tablename"] = TABLE_NAME
-        # TODO table has no vehicle type, maybe don´t even store it?
+        #  maybe don´t even store it?
         json_data["Vehicle Type"] = ""
         results.append(json.loads(json.dumps(json_data)))
     return results
@@ -298,8 +298,14 @@ def get_json_data():
     json_list = []
     excel_file_folder_name = "kba_car_registration_excel_files"
     excel_file_folder_path = os.path.join(os.getcwd(), excel_file_folder_name)
-    for year in range(2015, datetime.datetime.now().year):
+    for year in range(START_YEAR, END_YEAR):
         kba_url = kba_generic_url_table.format(year)
+        if year == 2012:
+            # for some reason this goddam url is different than the others
+            kba_url = r"https://www.kba.de/DE/Statistik/Fahrzeuge/Neuzulassungen/Umwelt/2012/2012_n_kurzbericht_umwelt_tabellen.html?nn=3525054&fromStatistic=3525054&yearFilter=2012&fromStatistic=3525054&yearFilter=2012"
+        if year == 2013:
+            kba_url = r"https://www.kba.de/DE/Statistik/Fahrzeuge/Neuzulassungen/Umwelt/2013/2013_n_umwelt_dusl_tabellen.html?nn=3525054&fromStatistic=3525054&yearFilter=2013&fromStatistic=3525054&yearFilter=2013"
+
         logging.info(f"New year: {year}" + "\n" + kba_url)
         # get content of website
         response = requests.get(kba_url)
