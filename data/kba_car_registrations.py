@@ -16,7 +16,7 @@ import logging
 
 TABLE_NAME = "car_registration"
 START_YEAR = 2010
-END_YEAR = 2022
+END_YEAR = 2023
 
 
 def get_table(tables: "bs4.element.ResultSet", keyword: str):
