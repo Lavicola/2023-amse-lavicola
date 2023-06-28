@@ -1,9 +1,10 @@
 # Project Plan
 
 ## Summary
-Germany recognized e-mobility as an important technology for itself and its economy at an early stage. Policymakers have continued to roll out several action plans to promote e-mobility, but what impact have these plans had in reality?
-this analysis shows the actual effects of the following German action plans on e-mobility:<br>
+Analysis of the charger infrastructure and the registration of BEV in Germany from 2009 - 2022
 ## Rationale
+Germany recognized e-mobility as core technology for itself and the industry at an early stage. In 2009, the National Electromobility Development Plan of the Federal Government was adopted, which was to ensure in 3 phases that Germany takes a leading role in electromobility. The analysis shows the goal for the three defined phases in the area of infrastructure and vehicles and then shows the reality for these years.
+In addition the analysis also shows the results after 2020.
 ## Datasources
 
 ### Datasource1: Liste der Ladesäulen
