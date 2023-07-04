@@ -3,16 +3,17 @@
 import shutil
 
 import requests
-import re
 import os
 import pandas as pd
 import re
 import json
 import random
 import logging
-TABLE_NAME = "Ladesaulen"
 
 url = "https://bundesnetzagentur.de/SharedDocs/Downloads/DE/Sachgebiete/Energie/Unternehmen_Institutionen/E_Mobilitaet/Ladesaeulenregister_CSV.csv?__blob=publicationFile&v=46"
+# the encoding style actually changed from Windows-1252 to Windows-1250
+ENCODING = "Windows-1250"
+TABLE_NAME = "Ladesaulen"
 
 
 def download_file(link: str, fileending: str, file_name="", params=""):
@@ -57,7 +58,7 @@ def clean_file(content: bytes):
     """
 
     # first convert to a string with the right encoding
-    content = content.decode("Windows-1252")
+    content = content.decode(ENCODING)
     # remove content until we reach the first column
     match = re.search(r'Betreiber;', content)
     if match:
@@ -65,7 +66,7 @@ def clean_file(content: bytes):
         new_content = content[start_index:]
     else:
         raise Exception("Error, could not clean the file")
-    return new_content.encode("Windows-1252")
+    return new_content.encode(ENCODING)
 
 
 def extract_csv_data(file_path: str):
@@ -76,7 +77,7 @@ def extract_csv_data(file_path: str):
     return list[json]
     
     """
-    df = pd.read_csv(file_path, delimiter=";", encoding='Windows-1252')
+    df = pd.read_csv(file_path, delimiter=";", encoding=ENCODING)
     # Convert DataFrame to a list of dictionaries
     data = df.to_dict(orient='records')
     # add tablename as key to all entries

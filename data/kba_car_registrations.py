@@ -253,7 +253,8 @@ def extract_excel_data(file_path: str, sheet_name: str, header_start: int, row_s
     return list[json]
     
     """
-    excel_file = pd.ExcelFile(file_path)
+    logging.info(f"Trying to read excel file: {file_path}")
+    excel_file = pd.ExcelFile(file_path, engine="openpyxl")
     excel_data = excel_file.parse(sheet_name=sheet_name)
     # first column start, which stores the index and the column name into a dict
     header_dict = {}
@@ -300,11 +301,13 @@ def get_json_data():
     excel_file_folder_path = os.path.join(os.getcwd(), excel_file_folder_name)
     for year in range(START_YEAR, END_YEAR):
         kba_url = kba_generic_url_table.format(year)
+        # germany authorities being authorities with suddenly having different URL for two specific years
         if year == 2012:
-            # for some reason this goddam url is different than the others
             kba_url = r"https://www.kba.de/DE/Statistik/Fahrzeuge/Neuzulassungen/Umwelt/2012/2012_n_kurzbericht_umwelt_tabellen.html?nn=3525054&fromStatistic=3525054&yearFilter=2012&fromStatistic=3525054&yearFilter=2012"
+            logging.info(f"Year {year} has a specific hardcoded URL using this: {kba_url}")
         if year == 2013:
             kba_url = r"https://www.kba.de/DE/Statistik/Fahrzeuge/Neuzulassungen/Umwelt/2013/2013_n_umwelt_dusl_tabellen.html?nn=3525054&fromStatistic=3525054&yearFilter=2013&fromStatistic=3525054&yearFilter=2013"
+            logging.info(f"Year {year} has a specific hardcoded URL using this: {kba_url}")
 
         logging.info(f"New year: {year}" + "\n" + kba_url)
         # get content of website

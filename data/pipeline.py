@@ -55,7 +55,6 @@ def main():
         logging.info("trying to load intermediate data")
         # split them before transformation
         json_charger = []
-        # TODO create a dict with json[tablename] for easier extension
         for element in data_saver.load_intermediate_data(INTERMEDIATE_PATH):
             # using an unique key we can detect the type of data: charger or car
             if "Hausnummer" in element:
@@ -68,7 +67,7 @@ def main():
         if json_car:
             logging.info("Success, Car Registration Data found and stored")
         logging.info("Downloading the Ladesauelen Data ")
-        #json_charger = ladesauele.get_json_data()
+        json_charger = ladesauele.get_json_data()
         if json_charger:
             logging.info("Success, Charger Data found and stored")
         logging.info("Starting to Transform the data")
