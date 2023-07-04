@@ -107,27 +107,35 @@ block TemperaturesFilePicker oftype FilePicker {
 
 
     block CelsiusToFahrenheitTransformer_TempC oftype TableTransformer {
-    inputColumn: 'Temperatur in °C (DWD)';
+    inputColumn: 'Temperatur';
     outputColumn: 'Temperatur';
     use: CelsiusToFahrenheit;
     }
 
     block CelsiusToFahrenheitTransformer_Batterie oftype TableTransformer {
-    inputColumn: 'Batterietemperatur in °C';
+    inputColumn: 'Batterietemperatur';
     outputColumn: 'Batterietemperatur';
     use: CelsiusToFahrenheit;
     }
 
+    // since we cannot just rename columns we delete the header
+    block TemperaturHeaderDeleter oftype RowDeleter{
+        delete: [row 1];
+    }
+    // if we header is gone we can delete the rows which are bothering us: columns we dont need within A - M
+    block TemperatureColumnDeleter oftype ColumnDeleter{
+        delete: [column F,column G,column H,column I,column L];
+    }
 
     block TemperaturesTableInterpreter oftype TableInterpreter {
-        header: true;
+        header: false;
         columns: [
             "Geraet" oftype DeviceID,
             "Hersteller" oftype text,
             "Model" oftype text,
             "Monat" oftype Month,
-            "Temperatur in °C (DWD)" oftype decimal,
-            "Batterietemperatur in °C" oftype decimal,
+            "Temperatur" oftype decimal,
+            "Batterietemperatur" oftype decimal,
             "Geraet aktiv" oftype GearetAktiv,
         ];
     }
@@ -143,6 +151,8 @@ block DatabaseLoader oftype SQLiteLoader{ table: "temperatures"; file: "./temper
         -> TemperaturesFilePicker
         -> TemperaturesTextFileInterpreter   
         -> TemperaturesCSVInterpreter
+        -> TemperaturHeaderDeleter
+        -> TemperatureColumnDeleter
         -> TemperaturesTableInterpreter
         -> CelsiusToFahrenheitTransformer_TempC
         -> CelsiusToFahrenheitTransformer_Batterie
