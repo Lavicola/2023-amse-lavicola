@@ -156,7 +156,7 @@ block DatabaseLoader oftype SQLiteLoader{ table: "temperatures"; file: "./temper
         -> TemperaturesTableInterpreter
         -> CelsiusToFahrenheitTransformer_TempC
         -> CelsiusToFahrenheitTransformer_Batterie
-        -> GeraeteStatusToBooleanTransformer
+       // -> GeraeteStatusToBooleanTransformer
         -> DeviceIdToInteger
         -> MonthToInteger
         -> DatabaseLoader;
