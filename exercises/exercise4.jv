@@ -1,0 +1,155 @@
+
+
+
+pipeline TemperaturesPipeline {
+
+    	block TemperaturesExtractor oftype HttpExtractor {
+		url: "https://www.mowesta.com/data/measure/mowesta-dataset-20221107.zip";
+
+	}
+
+    block ZipArchiveInterpreter oftype ArchiveInterpreter {
+    archiveType: "zip";
+}
+
+
+block TemperaturesFilePicker oftype FilePicker {
+  path: "/data.csv";
+}
+
+
+
+
+    block TemperaturesTextFileInterpreter oftype TextFileInterpreter {}
+
+    block TemperaturesCSVInterpreter oftype CSVInterpreter {
+        		delimiter: ';';
+    }
+
+
+
+    // 1 - 12 possible
+    constraint ValidMonth oftype RangeConstraint {
+        lowerBound: 1;
+        lowerBoundInclusive: true;
+        upperBound: 12;
+        upperBoundInclusive: true;
+    }
+
+    valuetype Month oftype decimal{
+        constraints: [ValidMonth];
+    }
+
+    // Geraet
+    constraint ValidDeviceID oftype RangeConstraint {
+        lowerBound: 1;
+        lowerBoundInclusive: true;
+        upperBound: 999;
+        upperBoundInclusive: true;
+    }
+
+    valuetype DeviceID oftype decimal{
+        constraints: [ValidDeviceID];
+    }
+
+
+
+    transform DecimalToInteger {
+        from DeviceID oftype decimal;
+        to DecimalAsInt oftype integer;
+        // because we only have full values we can use floor to extract the int 
+        DecimalAsInt: floor(DeviceID) ;
+    }
+
+    block DeviceIdToInteger oftype TableTransformer {
+        inputColumn: 'Geraet';
+        outputColumn: 'Geraet';
+        use: DecimalToInteger;
+    }
+
+    block MonthToInteger oftype TableTransformer {
+        inputColumn: 'Monat';
+        outputColumn: 'Monat';
+        use: DecimalToInteger;
+    }
+
+    
+
+    // everything else makes no sense
+    constraint GereatAktivValues oftype AllowlistConstraint {
+      allowlist: ["Ja", "Nein"];
+    }
+
+    valuetype GearetAktiv oftype text{
+        constraints: [GereatAktivValues];
+    }
+
+    transform StatusToBoolean {
+    from statusText oftype text;
+    to statusBoolean oftype boolean;
+
+    statusBoolean: statusText == "Ja";
+    }
+
+        block GeraeteStatusToBooleanTransformer oftype TableTransformer {
+        inputColumn: 'Geraet aktiv';
+        outputColumn: 'Geraet aktiv';
+        use: StatusToBoolean;
+    }
+
+    //
+    transform CelsiusToFahrenheit {
+    from tempCelsius oftype decimal;
+    to tempKelvin oftype decimal;
+
+    tempKelvin: tempCelsius * 9/5 + 32;
+    }
+
+
+    block CelsiusToFahrenheitTransformer_TempC oftype TableTransformer {
+    inputColumn: 'Temperatur in °C (DWD)';
+    outputColumn: 'Temperatur';
+    use: CelsiusToFahrenheit;
+    }
+
+    block CelsiusToFahrenheitTransformer_Batterie oftype TableTransformer {
+    inputColumn: 'Batterietemperatur in °C';
+    outputColumn: 'Batterietemperatur';
+    use: CelsiusToFahrenheit;
+    }
+
+
+    block TemperaturesTableInterpreter oftype TableInterpreter {
+        header: true;
+        columns: [
+            "Geraet" oftype DeviceID,
+            "Hersteller" oftype text,
+            "Model" oftype text,
+            "Monat" oftype Month,
+            "Temperatur in °C (DWD)" oftype decimal,
+            "Batterietemperatur in °C" oftype decimal,
+            "Geraet aktiv" oftype GearetAktiv,
+        ];
+    }
+
+
+
+
+
+block DatabaseLoader oftype SQLiteLoader{ table: "temperatures"; file: "./temperatures.sqlite";}
+
+    TemperaturesExtractor 
+        -> ZipArchiveInterpreter
+        -> TemperaturesFilePicker
+        -> TemperaturesTextFileInterpreter   
+        -> TemperaturesCSVInterpreter
+        -> TemperaturesTableInterpreter
+        -> CelsiusToFahrenheitTransformer_TempC
+        -> CelsiusToFahrenheitTransformer_Batterie
+        -> GeraeteStatusToBooleanTransformer
+        -> DeviceIdToInteger
+        -> MonthToInteger
+        -> DatabaseLoader;
+
+
+}
