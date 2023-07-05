@@ -38,7 +38,7 @@ def sql_part(df):
     engine = create_engine(f'sqlite:///gtfs.sqlite')
     df.to_sql(TABLE_NAME, con=engine, if_exists="replace", index=False,
               dtype={
-                  "stop_id": types.String,
+                  "stop_id": types.Integer,
                   "stop_name": types.String,
                   "stop_lat": types.Float,
                   "stop_lon": types.Float,
